@@ -19,3 +19,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['reviewer'] = self.context['request'].user
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        validated_data.pop('business_user', None)
+        return super().update(instance, validated_data)
