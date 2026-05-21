@@ -1,94 +1,71 @@
-# Coderr Backend
+<h1 align="center">Coderr REST API</h1>
 
-Coderr is a platform connecting freelance professionals (business users) with clients (customer users). This is the backend implementation using Python, Django, and Django REST Framework.
+<p align="center">A Django REST Framework backend for a freelance marketplace. It supports token authentication, user profiles, offers, orders, reviews, and basic platform statistics.</p>
 
-## Features
-- **Token Authentication:** Secure registration and login flow.
-- **Profiles:** Automatic profile creation on signup, role-based distinction (`business` or `customer`).
-- **Offers:** Businesses can create specific service packages (`basic`, `standard`, `premium`) atomically.
-- **Orders:** Customers can place orders for specific packages.
-- **Reviews:** Customers can review businesses.
+## Setup & Run Locally
 
-## Tech Stack
-- Python 3.12+
-- Django 5.0+
-- Django REST Framework
-- SQLite (for development)
-- pytest & pytest-django
-- django-filter
-
-## Setup Instructions
-
-### 1. Clone the repository
-```bash
-git clone <repository-url>
-cd Coderr
-```
-
-### 2. Create and activate a virtual environment
+### 1. Create and activate a virtual environment
 ```bash
 python -m venv venv
-# On Windows
-.\venv\Scripts\activate
-# On Linux/MacOS
+```
+
+**Windows:**
+```bash
+venv\Scripts\activate
+```
+
+**macOS/Linux:**
+```bash
 source venv/bin/activate
 ```
 
-### 3. Install dependencies
+### 2. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Setup Environment Variables
+### 3. Environment variables
+
 Create a `.env` file in the project root:
 ```env
 DEBUG=True
-SECRET_KEY=your-secret-key-here
+SECRET_KEY=your-secret-key
 ALLOWED_HOSTS=127.0.0.1,localhost
 ```
 
-### 5. Apply Migrations
+### 4. Run database migrations
 ```bash
 python manage.py migrate
 ```
 
-### 6. Run the Development Server
+### 5. Start the development server
 ```bash
 python manage.py runserver
 ```
 
-## API Endpoints
+> The API will be available at `http://127.0.0.1:8000/`.
 
-### Authentication
-- `POST /api/registration/` - Register a new user.
-- `POST /api/login/` - Login and get auth token.
+## Architecture & Apps
 
-### Profiles
-- `GET/PATCH /api/profile/{id}/` - Manage specific profile.
-- `GET /api/profiles/business/` - List all business profiles.
-- `GET /api/profiles/customer/` - List all customer profiles.
+| App | Description |
+|---|---|
+| **`auth_app`** | Registration and token-based login. |
+| **`profile_app`** | Customer and business profile data. |
+| **`offers_app`** | Service offers with basic, standard, and premium packages. |
+| **`orders_app`** | Customer orders for business offers. |
+| **`reviews_app`** | Customer reviews for business users. |
+| **`base_info_app`** | Public platform statistics. |
 
-### Offers
-- `GET/POST /api/offers/` - List/Create offers.
-- `GET/PATCH/DELETE /api/offers/{id}/` - Manage specific offer.
-- `GET /api/offerdetails/{id}/` - Get details of an offer detail.
+## Security & Permissions
 
-### Orders
-- `GET/POST /api/orders/` - List/Create orders.
-- `PATCH/DELETE /api/orders/{id}/` - Update/Delete orders.
-- `GET /api/order-count/{id}/` - In-progress order count.
-- `GET /api/completed-order-count/{id}/` - Completed order count.
-
-### Reviews
-- `GET/POST /api/reviews/` - List/Create reviews.
-- `PATCH/DELETE /api/reviews/{id}/` - Update/Delete reviews.
-
-### Base Info
-- `GET /api/base-info/` - General platform stats.
+- **Authentication:** Protected endpoints require an `Authorization: Token <key>` header.
+- **Profiles:** Users can update only their own profile.
+- **Offers:** Only business users can create offers.
+- **Orders:** Customers create orders; involved users can access their related orders.
+- **Reviews:** Customers can review business users once.
 
 ## Testing
-Run the comprehensive test suite utilizing pytest:
+
 ```bash
 pytest
 ```
-Code coverage is measured and written to the `htmlcov` directory.
