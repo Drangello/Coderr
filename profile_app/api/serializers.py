@@ -4,6 +4,7 @@ from profile_app.models import Profile
 class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     email = serializers.EmailField(source='user.email')
+    uploaded_at = serializers.DateTimeField(source='created_at', read_only=True)
 
     class Meta:
         model = Profile
@@ -19,7 +20,8 @@ class ProfileSerializer(serializers.ModelSerializer):
             'working_hours',
             'type',
             'email',
-            'created_at'
+            'created_at',
+            'uploaded_at'
         ]
         read_only_fields = ['user', 'type', 'created_at']
 
