@@ -110,7 +110,52 @@ class TestReviewAPI:
 
 @pytest.mark.django_db
 class TestBaseInfoAPI:
-    def test_base_info(self, api_client):
+    def test_base_info(self, api_client, create_business, create_customer):
+        business_1 = create_business('base_bus_1', 'pass1')
+        business_2 = create_business('base_bus_2', 'pass2')
+        customer_1 = create_customer('base_cust_1', 'pass1')
+        customer_2 = create_customer('base_cust_2', 'pass2')
+        customer_3 = create_customer('base_cust_3', 'pass3')
+
+        Offer.objects.create(user=business_1, title='Logo Design', description='Design work')
+        Offer.objects.create(user=business_2, title='Web Design', description='Web work')
+
+        Review.objects.create(
+            business_user=business_1,
+            reviewer=customer_1,
+            rating=4,
+            description='Good',
+        )
+        Review.objects.create(
+            business_user=business_1,
+            reviewer=customer_2,
+            rating=4,
+            description='Good again',
+        )
+        Review.objects.create(
+            business_user=business_2,
+            reviewer=customer_3,
+            rating=5,
+            description='Great',
+        )
+
         response = api_client.get('/api/base-info/')
+
         assert response.status_code == 200
-        assert 'review_count' in response.data
+        assert response.data == {
+            'review_count': 3,
+            'average_rating': 4.3,
+            'business_profile_count': 2,
+            'offer_count': 2,
+        }
+
+    def test_base_info_without_reviews(self, api_client):
+        response = api_client.get('/api/base-info/')
+
+        assert response.status_code == 200
+        assert response.data == {
+            'review_count': 0,
+            'average_rating': 0.0,
+            'business_profile_count': 0,
+            'offer_count': 0,
+        }
