@@ -1,12 +1,14 @@
-from rest_framework import generics, permissions
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import permissions, viewsets
 from rest_framework.filters import OrderingFilter
-from reviews_app.models import Review
-from reviews_app.api.serializers import ReviewSerializer
-from reviews_app.api.permissions import IsCustomerUser, IsReviewOwnerOrReadOnly
-from reviews_app.api.filters import ReviewFilter
 
-class ReviewListCreateView(generics.ListCreateAPIView):
+from reviews_app.api.filters import ReviewFilter
+from reviews_app.api.permissions import IsCustomerUser, IsReviewOwnerOrReadOnly
+from reviews_app.api.serializers import ReviewSerializer
+from reviews_app.models import Review
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -14,11 +16,6 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     ordering_fields = ['updated_at', 'rating']
 
     def get_permissions(self):
-        if self.request.method == 'POST':
+        if self.action == 'create':
             return [permissions.IsAuthenticated(), IsCustomerUser()]
-        return [permissions.IsAuthenticated()]
-
-class ReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAuthenticated, IsReviewOwnerOrReadOnly]
+        return [permissions.IsAuthenticated(), IsReviewOwnerOrReadOnly()]

@@ -1,8 +1,14 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
 
 class Offer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='offers', verbose_name='Creator')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='offers',
+        verbose_name='Creator'
+    )
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='offers/', null=True, blank=True)
     description = models.TextField()
@@ -24,7 +30,11 @@ class OfferDetail(models.Model):
         STANDARD = 'standard', 'Standard'
         PREMIUM = 'premium', 'Premium'
 
-    offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name='details')
+    offer = models.ForeignKey(
+        Offer,
+        on_delete=models.CASCADE,
+        related_name='details'
+    )
     title = models.CharField(max_length=200)
     revisions = models.IntegerField(default=-1)
     delivery_time_in_days = models.PositiveIntegerField()

@@ -1,20 +1,37 @@
 from rest_framework import serializers
+
 from reviews_app.models import Review
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ['id', 'business_user', 'reviewer', 'rating', 'description', 'created_at', 'updated_at']
+        fields = [
+            'id',
+            'business_user',
+            'reviewer',
+            'rating',
+            'description',
+            'created_at',
+            'updated_at'
+        ]
         read_only_fields = ['id', 'reviewer', 'created_at', 'updated_at']
 
     def validate(self, data):
-        # We need to ensure that the reviewer hasn't already reviewed this business.
         request = self.context.get('request')
         if request and request.method == 'POST':
-            business_user = data.get('business_user')
-            if Review.objects.filter(business_user=business_user, reviewer=request.user).exists():
-                raise serializers.ValidationError("You have already reviewed this business user.")
+            self._validate_unique_review(data, request.user)
         return data
+
+    def _validate_unique_review(self, data, reviewer):
+        business_user = data.get('business_user')
+        review_exists = Review.objects.filter(
+            business_user=business_user,
+            reviewer=reviewer
+        ).exists()
+        if review_exists:
+            message = "You have already reviewed this business user."
+            raise serializers.ValidationError(message)
 
     def create(self, validated_data):
         validated_data['reviewer'] = self.context['request'].user

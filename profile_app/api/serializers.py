@@ -1,5 +1,7 @@
 from rest_framework import serializers
+
 from profile_app.models import Profile
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
@@ -34,6 +36,5 @@ class ProfileSerializer(serializers.ModelSerializer):
         # Update profile fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-            
         instance.save()
         return instance

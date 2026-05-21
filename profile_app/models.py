@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
 
 class Profile(models.Model):
     class UserType(models.TextChoices):
@@ -14,7 +15,12 @@ class Profile(models.Model):
     )
     first_name = models.CharField(max_length=150, blank=True, default='')
     last_name = models.CharField(max_length=150, blank=True, default='')
-    file = models.ImageField(upload_to='profiles/', blank=True, null=True, verbose_name="Profile Picture")
+    file = models.ImageField(
+        upload_to='profiles/',
+        blank=True,
+        null=True,
+        verbose_name="Profile Picture"
+    )
     location = models.CharField(max_length=200, blank=True, default='')
     tel = models.CharField(max_length=50, blank=True, default='')
     description = models.TextField(blank=True, default='')

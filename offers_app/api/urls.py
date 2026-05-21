@@ -1,12 +1,21 @@
 from django.urls import path
 from offers_app.api.views import (
-    OfferListCreateView,
-    OfferRetrieveUpdateDestroyView,
-    OfferDetailRetrieveView
+    OfferDetailViewSet,
+    OfferViewSet
 )
 
 urlpatterns = [
-    path('offers/', OfferListCreateView.as_view(), name='offer-list'),
-    path('offers/<int:pk>/', OfferRetrieveUpdateDestroyView.as_view(), name='offer-detail'),
-    path('offerdetails/<int:pk>/', OfferDetailRetrieveView.as_view(), name='offerdetail-detail'),
+    path('offers/', OfferViewSet.as_view({
+        'get': 'list',
+        'post': 'create'
+    }), name='offer-list'),
+    path('offers/<int:pk>/', OfferViewSet.as_view({
+        'get': 'retrieve',
+        'patch': 'partial_update',
+        'put': 'update',
+        'delete': 'destroy'
+    }), name='offer-detail'),
+    path('offerdetails/<int:pk>/', OfferDetailViewSet.as_view({
+        'get': 'retrieve'
+    }), name='offerdetail-detail'),
 ]

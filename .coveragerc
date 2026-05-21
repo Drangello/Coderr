@@ -1,0 +1,20 @@
+[run]
+omit =
+    */migrations/*
+    */tests.py
+    tests/*
+    */admin.py
+    */apps.py
+    auth_app/views.py
+    base_info_app/views.py
+    offers_app/views.py
+    orders_app/views.py
+    profile_app/views.py
+    reviews_app/views.py
+    manage.py
+    core/asgi.py
+    core/wsgi.py
+
+[report]
+show_missing = True
+skip_covered = False
