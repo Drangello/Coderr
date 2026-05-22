@@ -1,8 +1,22 @@
+"""Models for offers and offer packages (Offer, OfferDetail).
+
+Contains the primary models for services offered and their package details.
+"""
 from django.contrib.auth.models import User
 from django.db import models
 
 
 class Offer(models.Model):
+    """Represents a service offer created by a user.
+
+    Fields
+    - user: Reference to the creating user.
+    - title: Offer title.
+    - image: Optional preview image.
+    - description: Detailed description of the offer.
+    - created_at: Creation timestamp (auto_now_add).
+    - updated_at: Last modification timestamp (auto_now).
+    """
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -25,6 +39,17 @@ class Offer(models.Model):
 
 
 class OfferDetail(models.Model):
+    """Package detail for an `Offer` including price and feature information.
+
+    Fields
+    - offer: ForeignKey to the related `Offer`.
+    - title: Package title.
+    - revisions: Number of allowed revisions (-1 for unlimited).
+    - delivery_time_in_days: Delivery time in days.
+    - price: Package price as a decimal.
+    - features: JSON list of feature descriptions.
+    - offer_type: Choice between Basic/Standard/Premium.
+    """
     class OfferType(models.TextChoices):
         BASIC = 'basic', 'Basic'
         STANDARD = 'standard', 'Standard'
