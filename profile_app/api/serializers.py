@@ -33,7 +33,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             instance.user.email = user_data['email']
             instance.user.save()
 
-        # Update profile fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()

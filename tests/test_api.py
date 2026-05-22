@@ -56,6 +56,53 @@ def create_review(business, reviewer, rating=4):
     )
 
 
+def patch_order_completed(api_client, order, business):
+    api_client.force_authenticate(user=business)
+    patch_response = api_client.patch(f'/api/orders/{order.id}/', {
+        'status': Order.Status.COMPLETED
+    })
+    count_response = api_client.get(
+        f'/api/completed-order-count/{business.id}/'
+    )
+    return patch_response, count_response
+
+
+def post_duplicate_review(api_client, business, reviewer):
+    api_client.force_authenticate(user=reviewer)
+    return api_client.post('/api/reviews/', {
+        'business_user': business.id,
+        'rating': 5,
+        'description': 'Again'
+    })
+
+
+def create_base_info_data(create_business, create_customer):
+    business_1 = create_business('base_bus_1', 'pass1')
+    business_2 = create_business('base_bus_2', 'pass2')
+    customers = [
+        create_customer('base_cust_1', 'pass1'),
+        create_customer('base_cust_2', 'pass2'),
+        create_customer('base_cust_3', 'pass3')
+    ]
+    create_base_info_objects(business_1, business_2, customers)
+
+
+def create_base_info_objects(business_1, business_2, customers):
+    create_named_offer(business_1, 'Logo Design', 'Design work')
+    create_named_offer(business_2, 'Web Design', 'Web work')
+    create_review(business_1, customers[0], rating=4)
+    create_review(business_1, customers[1], rating=4)
+    create_review(business_2, customers[2], rating=5)
+
+
+def create_named_offer(user, title, description):
+    return Offer.objects.create(
+        user=user,
+        title=title,
+        description=description
+    )
+
+
 def assert_base_info(response, reviews, rating, profiles, offers):
     assert response.status_code == 200
     assert response.data == {
@@ -199,33 +246,22 @@ class TestOrderAPI:
     def test_create_order(self, api_client, create_business, create_customer):
         bus = create_business('b', 'p')
         cust = create_customer('c', 'p')
-        offer = Offer.objects.create(user=bus, title="T", description="D")
-        detail = OfferDetail.objects.create(
-            offer=offer,
-            title="D",
-            delivery_time_in_days=1,
-            price=10,
-            offer_type="basic"
-        )
+        offer = create_offer_with_details(bus)
+        detail = offer.details.first()
         api_client.force_authenticate(user=cust)
         response = api_client.post('/api/orders/', {'offer_detail_id': detail.id})
         assert response.status_code == 201
         assert response.data['status'] == 'in_progress'
 
-    def test_order_update_and_counts(
-        self,
-        api_client,
-        create_business,
-        create_customer
-    ):
+    def test_order_update_counts(self, api_client, create_business, create_customer):
         bus = create_business('order_bus', 'p')
         cust = create_customer('order_cust', 'p')
         order = create_order(cust, bus)
-        api_client.force_authenticate(user=bus)
-        patch_response = api_client.patch(f'/api/orders/{order.id}/', {
-            'status': Order.Status.COMPLETED
-        })
-        count_response = api_client.get(f'/api/completed-order-count/{bus.id}/')
+        patch_response, count_response = patch_order_completed(
+            api_client,
+            order,
+            bus
+        )
         assert patch_response.status_code == 200
         assert count_response.data['completed_order_count'] == 1
 
@@ -258,21 +294,11 @@ class TestReviewAPI:
         assert response.status_code == 201
         assert response.data['rating'] == 5
 
-    def test_duplicate_and_update_review(
-        self,
-        api_client,
-        create_business,
-        create_customer
-    ):
+    def test_dup_update_review(self, api_client, create_business, create_customer):
         bus = create_business('review_bus', 'p')
         cust = create_customer('review_cust', 'p')
         review = create_review(bus, cust)
-        api_client.force_authenticate(user=cust)
-        duplicate = api_client.post('/api/reviews/', {
-            'business_user': bus.id,
-            'rating': 5,
-            'description': 'Again'
-        })
+        duplicate = post_duplicate_review(api_client, bus, cust)
         update = api_client.patch(f'/api/reviews/{review.id}/', {
             'business_user': create_business('other_bus', 'p').id,
             'rating': 3
@@ -297,42 +323,7 @@ class TestReviewAPI:
 @pytest.mark.django_db
 class TestBaseInfoAPI:
     def test_base_info(self, api_client, create_business, create_customer):
-        business_1 = create_business('base_bus_1', 'pass1')
-        business_2 = create_business('base_bus_2', 'pass2')
-        customer_1 = create_customer('base_cust_1', 'pass1')
-        customer_2 = create_customer('base_cust_2', 'pass2')
-        customer_3 = create_customer('base_cust_3', 'pass3')
-
-        Offer.objects.create(
-            user=business_1,
-            title='Logo Design',
-            description='Design work'
-        )
-        Offer.objects.create(
-            user=business_2,
-            title='Web Design',
-            description='Web work'
-        )
-
-        Review.objects.create(
-            business_user=business_1,
-            reviewer=customer_1,
-            rating=4,
-            description='Good',
-        )
-        Review.objects.create(
-            business_user=business_1,
-            reviewer=customer_2,
-            rating=4,
-            description='Good again',
-        )
-        Review.objects.create(
-            business_user=business_2,
-            reviewer=customer_3,
-            rating=5,
-            description='Great',
-        )
-
+        create_base_info_data(create_business, create_customer)
         response = api_client.get('/api/base-info/')
         assert_base_info(response, 3, 4.3, 2, 2)
 
