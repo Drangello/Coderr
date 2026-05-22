@@ -1,24 +1,24 @@
-"""Modelle für Benutzerprofile (Profile).
+"""Models for user profiles (Profile).
 
-Enthält das `Profile`-Modell mit zusätzlichen Benutzerdaten.
+Contains the `Profile` model with additional user information.
 """
 from django.contrib.auth.models import User
 from django.db import models
 
 
 class Profile(models.Model):
-    """Ergänzende Profildaten für einen `User`.
+    """Supplementary profile data for a `User`.
 
     Fields
-    - user: OneToOne-Verknüpfung zum Django-User.
-    - first_name/last_name: Vor- und Nachname (optional).
-    - file: Profilbild (optional).
-    - location: Standort/Ort.
-    - tel: Telefonnummer.
-    - description: Freitextbeschreibung.
-    - working_hours: Geschäftszeiten (optional).
-    - type: Nutzer-Typ (Business oder Customer).
-    - created_at: Erstellungszeitpunkt.
+    - user: OneToOne relation to the Django User.
+    - first_name/last_name: Optional first and last name.
+    - file: Profile image (optional).
+    - location: Location/place.
+    - tel: Telephone number.
+    - description: Free-text description.
+    - working_hours: Working hours (optional).
+    - type: User type (Business or Customer).
+    - created_at: Creation timestamp.
     """
     class UserType(models.TextChoices):
         BUSINESS = 'business', 'Business'
