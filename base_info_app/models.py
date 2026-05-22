@@ -1,5 +1,5 @@
-"""Platzhalter für Basisinformationen im `base_info_app`.
+"""Placeholder for base information models in `base_info_app`.
 
-Dieses Modul ist derzeit leer; hier können zentrale Basisdaten-Modelle
-für die Anwendung ergänzt werden.
+This module is currently empty; central base data models for the
+application can be added here.
 """

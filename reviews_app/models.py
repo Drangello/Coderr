@@ -1,6 +1,6 @@
-"""Modelle für Bewertungen (Review).
+"""Models for reviews (Review).
 
-Enthält das `Review`-Modell zur Bewertung von Business-Nutzern durch Reviewer.
+Contains the `Review` model used to rate business users by reviewers.
 """
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -8,14 +8,14 @@ from django.db import models
 
 
 class Review(models.Model):
-    """Repräsentiert eine Bewertung eines Business durch einen Reviewer.
+    """Represents a review of a business by a reviewer.
 
     Fields
-    - business_user: Das bewertete Business (User).
-    - reviewer: Der bewertende User.
-    - rating: Bewertung (1-5).
-    - description: Freitext zur Bewertung.
-    - created_at/updated_at: Zeitstempel.
+    - business_user: The business user being reviewed.
+    - reviewer: The user who provided the review.
+    - rating: Rating value (1-5).
+    - description: Free-text review description.
+    - created_at/updated_at: Timestamps.
     """
     business_user = models.ForeignKey(
         User,

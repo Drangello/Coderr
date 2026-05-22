@@ -1,5 +1,5 @@
-"""Platzhalter für benutzerbezogene Modelle im `auth_app`.
+"""Placeholder for user-related models in `auth_app`.
 
-Derzeit enthält dieses Modul keine zusätzlichen Modelle; hier können
-zukünftig erweiterte User-Modelle oder Signalfunktionen ergänzt werden.
+This module currently contains no additional models; extended user
+models or signal handlers can be added here in the future.
 """
