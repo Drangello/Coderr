@@ -12,6 +12,7 @@ from offers_app.api.serializers import (
     OfferListSerializer
 )
 from offers_app.models import Offer, OfferDetail
+class OfferViewSet(viewsets.ModelViewSet):
 
 
     pagination_class = None
