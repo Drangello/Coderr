@@ -15,7 +15,7 @@ from orders_app.models import Order
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
+    pagination_class = None
     serializer_class = OrderSerializer
 
     def get_serializer_class(self):

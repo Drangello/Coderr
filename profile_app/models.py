@@ -41,7 +41,7 @@ class Profile(models.Model):
     location = models.CharField(max_length=200, blank=True, default='')
     tel = models.CharField(max_length=50, blank=True, default='')
     description = models.TextField(blank=True, default='')
-    working_hours = models.CharField(max_length=100, blank=True, default='')
+    working_hours = models.CharField(max_length=255, blank=True, default='')
     type = models.CharField(
         max_length=20,
         choices=UserType.choices,

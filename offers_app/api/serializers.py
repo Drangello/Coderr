@@ -96,12 +96,23 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 
     def validate_details(self, details):
-        if len(details) != 3:
-            raise serializers.ValidationError("An offer must have exactly 3 details.")
-        types = [detail.get('offer_type') for detail in details]
-        if sorted(types) != OFFER_TYPES:
-            message = "Offer details must include basic, standard, and premium."
-            raise serializers.ValidationError(message)
+        # Allow partial updates: if not all three details are provided, ensure provided ones are valid
+        if not details:
+            return details
+        # Ensure each provided detail has a valid offer_type
+        provided_types = [detail.get('offer_type') for detail in details]
+        if any(t not in OFFER_TYPES for t in provided_types):
+            raise serializers.ValidationError("Invalid offer_type in details.")
+        # If this is a full create (POST) we require exactly three distinct types
+        request = self.context.get('request')
+        if request and request.method == 'POST':
+            if len(details) != 3:
+                raise serializers.ValidationError("An offer must have exactly 3 details.")
+            if sorted(provided_types) != OFFER_TYPES:
+                raise serializers.ValidationError("Offer details must include basic, standard, and premium.")
+        # For PATCH (partial_update) we allow a subset; just ensure no duplicate types
+        if len(set(provided_types)) != len(provided_types):
+            raise serializers.ValidationError("Duplicate offer_type in details.")
         return details
 
     @transaction.atomic

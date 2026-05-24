@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from profile_app.api.permissions import IsOwnerOrReadOnly
@@ -13,6 +14,7 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
 
 
 class BusinessProfileListView(generics.ListAPIView):
+    pagination_class = None
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
@@ -21,6 +23,7 @@ class BusinessProfileListView(generics.ListAPIView):
 
 
 class CustomerProfileListView(generics.ListAPIView):
+    pagination_class = None
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
