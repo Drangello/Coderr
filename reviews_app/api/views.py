@@ -9,6 +9,7 @@ from reviews_app.models import Review
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    pagination_class = None
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
