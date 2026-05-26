@@ -1,3 +1,5 @@
+"""URL routes for the offer API endpoints."""
+
 from django.urls import path
 from offers_app.api.views import (
     OfferDetailViewSet,

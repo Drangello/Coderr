@@ -1,3 +1,5 @@
+"""Serializers for authentication-related API payloads."""
+
 from django.contrib.auth.models import User
 
 from rest_framework import serializers
@@ -6,6 +8,8 @@ from profile_app.models import Profile
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    """Serializer for user registration requests."""
+
     repeated_password = serializers.CharField(write_only=True)
     type = serializers.ChoiceField(choices=Profile.UserType.choices, write_only=True)
 
@@ -15,6 +19,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
+        """Validate that the password repetition matches and the email is unique."""
         if data['password'] != data['repeated_password']:
             raise serializers.ValidationError({"password": "Passwords do not match."})
         if User.objects.filter(email=data.get('email')).exists():
@@ -22,6 +27,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        """Create a new user and associated profile from validated registration data."""
         user_type = validated_data.pop('type')
         validated_data.pop('repeated_password')
         user = self._create_user(validated_data)

@@ -1,3 +1,5 @@
+"""URL routes for review API endpoints."""
+
 from django.urls import path
 from reviews_app.api.views import ReviewViewSet
 

@@ -1,3 +1,5 @@
+"""Filter definitions for offer list queries."""
+
 from django.db.models import Min
 from django_filters import rest_framework as filters
 
@@ -14,11 +16,13 @@ class OfferFilter(filters.FilterSet):
         fields = ['creator_id', 'min_price', 'max_delivery_time']
 
     def filter_min_price(self, queryset, name, value):
+        """Filter offers whose minimum package price is greater than or equal to value."""
         return queryset.annotate(
             min_price_val=Min('details__price')
         ).filter(min_price_val__gte=value)
 
     def filter_max_delivery_time(self, queryset, name, value):
+        """Filter offers whose shortest delivery time is less than or equal to value."""
         return queryset.annotate(
             min_delivery=Min('details__delivery_time_in_days')
         ).filter(min_delivery__lte=value)

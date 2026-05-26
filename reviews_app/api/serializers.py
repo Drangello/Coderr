@@ -1,9 +1,13 @@
+"""Serializers for review creation and display."""
+
 from rest_framework import serializers
 
 from reviews_app.models import Review
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Serializer for review objects and creation validation."""
+
     class Meta:
         model = Review
         fields = [
@@ -18,6 +22,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'reviewer', 'created_at', 'updated_at']
 
     def validate(self, data):
+        """Ensure a customer only reviews a business once."""
         request = self.context.get('request')
         if request and request.method == 'POST':
             self._validate_unique_review(data, request.user)
@@ -34,9 +39,11 @@ class ReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(message)
 
     def create(self, validated_data):
+        """Assign the current user as reviewer and create the review."""
         validated_data['reviewer'] = self.context['request'].user
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
+        """Prevent changes to the business_user during review updates."""
         validated_data.pop('business_user', None)
         return super().update(instance, validated_data)

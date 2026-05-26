@@ -1,3 +1,5 @@
+"""URL routes for profile-related API endpoints."""
+
 from django.urls import path
 
 from profile_app.api.views import (

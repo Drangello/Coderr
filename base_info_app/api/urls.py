@@ -1,3 +1,5 @@
+"""URL routes for base information API endpoints."""
+
 from django.urls import path
 from base_info_app.api.views import BaseInfoView
 
