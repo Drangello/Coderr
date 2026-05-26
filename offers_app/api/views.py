@@ -12,10 +12,9 @@ from offers_app.api.serializers import (
     OfferListSerializer
 )
 from offers_app.models import Offer, OfferDetail
+
+
 class OfferViewSet(viewsets.ModelViewSet):
-
-
-    pagination_class = None
     queryset = Offer.objects.all()
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = OfferFilter
