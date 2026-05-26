@@ -67,6 +67,7 @@ python manage.py runserver
 ## Testing
 
 ```bash
-pip install pytest-cov   # optional, for coverage reports
-pytest                # run tests
+pip install pytest-cov 
+
+pytest               
 ```
