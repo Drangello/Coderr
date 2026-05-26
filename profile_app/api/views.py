@@ -1,7 +1,6 @@
 """API views for user profile retrieval and update."""
 
 from rest_framework import generics
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from profile_app.api.permissions import IsOwnerOrReadOnly

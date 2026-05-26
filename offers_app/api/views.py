@@ -20,6 +20,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     """ViewSet for managing offers and filtering available offers."""
 
     queryset = Offer.objects.all()
+    pagination_class = None
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = OfferFilter
     search_fields = ['title', 'description']
