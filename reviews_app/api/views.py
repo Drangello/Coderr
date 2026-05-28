@@ -15,6 +15,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    pagination_class = None
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = ReviewFilter
     ordering_fields = ['updated_at', 'rating']
