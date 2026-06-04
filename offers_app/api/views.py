@@ -24,11 +24,15 @@ class OfferViewSet(viewsets.ModelViewSet):
     filterset_class = OfferFilter
     search_fields = ['title', 'description']
     ordering_fields = ['updated_at', 'min_price']
+    pagination_class = None
 
     def get_queryset(self):
-        """Annotate offers with their minimum price and sort by update time."""
-        return Offer.objects.annotate(
-            min_price=Min('details__price')
+        """Annotate offers with package minimums and sort by update time."""
+        return Offer.objects.select_related('user').prefetch_related(
+            'details'
+        ).annotate(
+            min_price=Min('details__price'),
+            min_delivery_time=Min('details__delivery_time_in_days')
         ).order_by('-updated_at')
 
     def get_serializer_class(self):

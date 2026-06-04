@@ -1,5 +1,7 @@
 """Serializers for offers and nested offer detail payloads."""
 
+from decimal import Decimal
+
 from django.db import transaction
 
 from rest_framework import serializers
@@ -8,6 +10,7 @@ from offers_app.models import Offer, OfferDetail
 
 
 OFFER_TYPES = ['basic', 'premium', 'standard']
+PRICE_QUANTIZE_VALUE = Decimal('0.01')
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):
@@ -71,13 +74,28 @@ class OfferListSerializer(serializers.ModelSerializer):
 
     def get_min_price(self, obj):
         """Return the smallest price among the associated offer details."""
-        details = obj.details.all()
-        return min([detail.price for detail in details]) if details else 0
+        annotated_min_price = getattr(obj, 'min_price', None)
+        if annotated_min_price is not None:
+            return annotated_min_price.quantize(PRICE_QUANTIZE_VALUE)
+
+        prices = [
+            detail.price
+            for detail in obj.details.all()
+            if detail.price is not None
+        ]
+        return min(prices).quantize(PRICE_QUANTIZE_VALUE) if prices else 0
 
     def get_min_delivery_time(self, obj):
         """Return the shortest delivery time among all associated details."""
-        details = obj.details.all()
-        values = [detail.delivery_time_in_days for detail in details]
+        annotated_min_delivery_time = getattr(obj, 'min_delivery_time', None)
+        if annotated_min_delivery_time is not None:
+            return annotated_min_delivery_time
+
+        values = [
+            detail.delivery_time_in_days
+            for detail in obj.details.all()
+            if detail.delivery_time_in_days is not None
+        ]
         return min(values) if values else 0
 
     def get_user_details(self, obj):

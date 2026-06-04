@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 import pytest
@@ -209,9 +211,39 @@ class TestOfferAPI:
         assert response.data['title'] == "Design"
         assert len(response.data['details']) == 3
 
-    def test_get_offers(self, api_client):
+    def test_get_offers_empty_db(self, api_client):
         response = api_client.get('/api/offers/')
+
         assert response.status_code == 200
+        assert response.data == []
+
+    def test_get_offers_with_data(self, api_client, create_business):
+        user = create_business('list_bus', 'pass1')
+        offer = create_offer_with_details(user, title="Listed")
+
+        response = api_client.get('/api/offers/')
+
+        assert response.status_code == 200
+        assert len(response.data) == 1
+        assert response.data[0]['id'] == offer.id
+        assert response.data[0]['min_price'] == Decimal('10.00')
+        assert response.data[0]['min_delivery_time'] == 1
+
+    def test_get_offers_without_details(self, api_client, create_business):
+        user = create_business('empty_detail_bus', 'pass1')
+        offer = Offer.objects.create(
+            user=user,
+            title="No Details",
+            description="Desc"
+        )
+
+        response = api_client.get('/api/offers/')
+
+        assert response.status_code == 200
+        assert response.data[0]['id'] == offer.id
+        assert response.data[0]['details'] == []
+        assert response.data[0]['min_price'] == 0
+        assert response.data[0]['min_delivery_time'] == 0
 
     def test_offer_filters_and_detail(self, api_client, create_business):
         user = create_business('filter_bus', 'pass1')
@@ -231,15 +263,39 @@ class TestOfferAPI:
         assert response.status_code == 200
         assert response.data['title'] == "Updated"
 
-    def test_offer_validation_and_permissions(self, api_client, create_customer):
-        user = create_customer('offer_customer', 'pass1')
-        api_client.force_authenticate(user=user)
-        response = api_client.post('/api/offers/', {
+    def test_post_offer_requires_authenticated_business_user(
+        self,
+        api_client,
+        create_business,
+        create_customer
+    ):
+        data = {
             "title": "Design",
             "description": "Desc",
             "details": offer_details()
-        }, format='json')
-        assert response.status_code == 403
+        }
+
+        unauthenticated = api_client.post('/api/offers/', data, format='json')
+
+        customer = create_customer('offer_customer', 'pass1')
+        api_client.force_authenticate(user=customer)
+        customer_response = api_client.post(
+            '/api/offers/',
+            data,
+            format='json'
+        )
+
+        business = create_business('offer_business', 'pass1')
+        api_client.force_authenticate(user=business)
+        business_response = api_client.post(
+            '/api/offers/',
+            data,
+            format='json'
+        )
+
+        assert unauthenticated.status_code == 401
+        assert customer_response.status_code == 403
+        assert business_response.status_code == 201
 
 @pytest.mark.django_db
 class TestOrderAPI:
