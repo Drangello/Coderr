@@ -21,7 +21,14 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = [
+	"coderrfw.de",
+	"www.coderrfw.de",
+	"34.159.219.34",
+	"localhost",
+	"127.0.0.1",
+]
+# Application definition ]
 
 # Application definition
 
