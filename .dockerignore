@@ -3,4 +3,4 @@ venv/
 __pycache__/
 .pytest_cache/
 .git/
-htmlcov/
+htmlcov/Coderr.sock

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     # Third party
     'rest_framework',
     'rest_framework.authtoken',
@@ -54,6 +55,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -160,3 +162,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
+CORS_ALLOWED_ORIGINS = [
+    "https://coderrfw.de",
+    "https://www.coderrfw.de",
+]
+
+CORS_ALLOW_CREDENTIALS = True
