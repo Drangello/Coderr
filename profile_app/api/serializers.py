@@ -42,3 +42,10 @@ class ProfileSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+
+    def to_representation(self, instance):
+        """Do not expose URLs for files missing from media storage."""
+        data = super().to_representation(instance)
+        if instance.file and not instance.file.storage.exists(instance.file.name):
+            data['file'] = None
+        return data

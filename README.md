@@ -31,6 +31,7 @@ Create a `.env` file in the project root:
 DEBUG=True
 SECRET_KEY=your-secret-key
 ALLOWED_HOSTS=127.0.0.1,localhost
+MEDIA_ROOT=media
 ```
 
 ### 4. Run database migrations
@@ -44,6 +45,13 @@ python manage.py runserver
 ```
 
 > The API will be available at `http://127.0.0.1:8000/`.
+
+## Production media
+
+Uploaded profile and offer images are served from `/api/media/`. Set
+`MEDIA_ROOT` to a persistent directory and mount that directory as a volume
+when running the Docker container, for example `/data/media`. Without a
+persistent volume, uploaded files are lost whenever the container is replaced.
 
 ## Architecture & Apps
 
