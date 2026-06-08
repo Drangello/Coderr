@@ -133,6 +133,8 @@ STATIC_BASE_URL = STATIC_URL
 
 MEDIA_URL = os.getenv('MEDIA_URL', '/api/media/')
 MEDIA_ROOT = Path(os.getenv('MEDIA_ROOT', BASE_DIR / 'media'))
+if not MEDIA_ROOT.is_absolute():
+    MEDIA_ROOT = BASE_DIR / MEDIA_ROOT
 
 # Respect HTTPS information forwarded by the production reverse proxy.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
